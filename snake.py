@@ -1,8 +1,8 @@
 import turtle
-import random 
+import random
 
 turtle.tracer(1,0)
-
+turtle.bgcolor('pink')
 SIZE_X=800
 SIZE_Y=500
 turtle.setup(SIZE_X, SIZE_Y)
@@ -18,7 +18,7 @@ food_pos = []
 food_stamps = []
 
 snake = turtle.clone()
-snake.shape("square")
+snake.shape("circle")
 
 turtle.hideturtle()
 def new_stamp():
@@ -69,6 +69,18 @@ turtle.onkeypress(right,"Right")
 
 turtle.listen()
 
+turtle.register_shape("za")
+food = turtle.clone()
+food.shape("za") 
+food_pos = [(100,100), (-100,100), (-100,-100), (100,-100)]
+food_stamps = []
+food.penup()
+
+for this_food_pos in food_pos:
+    food.goto(this_food_pos)
+    stamp = food.stamp()
+    food_stamps.append(stamp)
+
 def move_snake():
     my_pos = snake.pos()
     x_pos = my_pos[0]
@@ -85,7 +97,7 @@ def move_snake():
         snake.goto(x_pos - SQUARE_SIZE, y_pos)
     new_stamp()
     remove_tail()
-    turtle.ontimer(move_snake,TIME_STEP)
+    
     new_pos = snake.pos()
     new_x_pos = new_pos[0]
     new_y_pos = new_pos[1]
@@ -101,6 +113,39 @@ def move_snake():
     elif new_y_pos <= DOWN_EDGE:
          print("You hit the down edge! Game over!")
          quit()
+         
+    if snake.pos() in food_pos:
+        food_index=food_pos.index(snake.pos())
+        food.clearstamp(food_stamps[food_index]) 
+        food_pos.pop(food_index) 
+        food_stamps.pop(food_index) 
+        new_stamp()
+        print("You have eaten the food!")
+    elif snake.pos() in stamp_list[0:-1]:
+        quit()
+        
+        
+    turtle.ontimer(move_snake,TIME_STEP)
+
+    if len(food_stamps) <= 6 :
+            make_food()
+
+def make_food():
+    min_x=-int(SIZE_X/2/SQUARE_SIZE)+1
+    max_x=int(SIZE_X/2/SQUARE_SIZE)-1
+    min_y=-int(SIZE_Y/2/SQUARE_SIZE)+1
+    max_y=int(SIZE_Y/2/SQUARE_SIZE)-1
+    
+    #Pick a position that is a random multiple of SQUARE_SIZE
+    food_x = random.randint(min_x,max_x)*SQUARE_SIZE
+    food_y = random.randint(min_y,max_y)*SQUARE_SIZE
+
+    food.goto(food_x,food_y)
+    food_pos.append(food.pos())
+    food_stamps.append(food.stamp())
+
+    
+
 
 move_snake()
    
