@@ -1,8 +1,9 @@
 import turtle
 import random
+from pygame import mixer
+
 
 turtle.tracer(1,0)
-turtle.bgcolor('pink')
 SIZE_X=800
 SIZE_Y=500
 turtle.setup(SIZE_X, SIZE_Y)
@@ -16,11 +17,14 @@ pos_list = []
 stamp_list = []
 food_pos = []
 food_stamps = []
-
+turtle.register_shape("pic2.gif")
 snake = turtle.clone()
-snake.shape("circle")
+snake.shape("pic2.gif")
 
 turtle.hideturtle()
+def score():
+    turtle.write("GAME OVER! your score is {}".format(len(stamp_list)- START_LENGTH), align = "center", font = ("Arial" , 20, "normal"))
+    quit()        
 def new_stamp():
     snake_pos = snake.pos()
     pos_list.append(snake_pos)
@@ -40,7 +44,7 @@ def remove_tail():
     old_stamp = stamp_list.pop(0) 
     snake.clearstamp(old_stamp) 
     pos_list.pop(0) 
-snake.direction = "Up"
+snake.direction = None
 UP_EDGE = 250
 DOWN_EDGE = -250
 RIGHT_EDGE = 400
@@ -69,9 +73,9 @@ turtle.onkeypress(right,"Right")
 
 turtle.listen()
 
-turtle.register_shape("za")
+turtle.register_shape("pic1.gif")
 food = turtle.clone()
-food.shape("za") 
+food.shape("pic1.gif") 
 food_pos = [(100,100), (-100,100), (-100,-100), (100,-100)]
 food_stamps = []
 food.penup()
@@ -103,16 +107,16 @@ def move_snake():
     new_y_pos = new_pos[1]
     if new_x_pos >= RIGHT_EDGE:
          print("You hit the right edge! Game over!")
-         quit()
+         score()
     elif new_x_pos <= LEFT_EDGE:
          print("You hit the left edge! Game over!")
-         quit()
+         score()
     elif new_y_pos >= UP_EDGE:
          print("You hit the up edge! Game over!")
-         quit()
+         score()
     elif new_y_pos <= DOWN_EDGE:
          print("You hit the down edge! Game over!")
-         quit()
+         score()
          
     if snake.pos() in food_pos:
         food_index=food_pos.index(snake.pos())
@@ -121,14 +125,20 @@ def move_snake():
         food_stamps.pop(food_index) 
         new_stamp()
         print("You have eaten the food!")
-    elif snake.pos() in stamp_list[0:-1]:
-        quit()
+    print("The position list is ", pos_list)
+    print("-----------------The snake position is ", snake.pos())
+    #if snake.pos() in pos_list[0:-1]:
+    s_pos_list = set(pos_list)
+    if len(s_pos_list) != len(pos_list):
+        print("You ate yourself")
+        score()
         
         
-    turtle.ontimer(move_snake,TIME_STEP)
-
     if len(food_stamps) <= 6 :
             make_food()
+        
+    turtle.ontimer(move_snake(),TIME_STEP)
+
 
 def make_food():
     min_x=-int(SIZE_X/2/SQUARE_SIZE)+1
