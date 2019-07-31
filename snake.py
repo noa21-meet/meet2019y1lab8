@@ -1,6 +1,5 @@
 import turtle
 import random
-from pygame import mixer
 
 
 turtle.tracer(1,0)
@@ -29,7 +28,7 @@ def new_stamp():
     snake_pos = snake.pos()
     pos_list.append(snake_pos)
 
-    snake_stamp=snake.stamp()
+    snake_stamp = snake.stamp()
 
     stamp_list.append(snake_stamp)
 
@@ -59,11 +58,11 @@ def down():
     print("You pressed the down key!")
 
 def right():
-    snake.direction="Right" 
+    snake.direction="Right"
     print("You pressed the right key!")
 
 def left():
-    snake.direction="Left" 
+    snake.direction="Left"
     print("You pressed the left key!")
 
 turtle.onkeypress(up, "Up")
@@ -78,29 +77,47 @@ food = turtle.clone()
 food.shape("pic1.gif") 
 food_pos = [(100,100), (-100,100), (-100,-100), (100,-100)]
 food_stamps = []
-food.penup()
+
 
 for this_food_pos in food_pos:
     food.goto(this_food_pos)
     stamp = food.stamp()
     food_stamps.append(stamp)
 
+def make_food():
+    min_x=-int(SIZE_X/2/SQUARE_SIZE)+1
+    max_x=int(SIZE_X/2/SQUARE_SIZE)-1
+    min_y=-int(SIZE_Y/2/SQUARE_SIZE)+1
+    max_y=int(SIZE_Y/2/SQUARE_SIZE)-1
+    
+    #Pick a position that is a random multiple of SQUARE_SIZE
+    food_x = random.randint(min_x,max_x)*SQUARE_SIZE
+    food_y = random.randint(min_y,max_y)*SQUARE_SIZE
+
+    food.goto(food_x,food_y)
+    food_pos.append(food.pos())
+    food_stamps.append(food.stamp())
+
 def move_snake():
     my_pos = snake.pos()
     x_pos = my_pos[0]
     y_pos = my_pos[1]
+
+
     if snake.direction == "Up":
         snake.goto(x_pos, y_pos + SQUARE_SIZE)
         print("You moved up!")
-    elif snake.direction=="Down":
+    if snake.direction=="Down":
         snake.goto(x_pos, y_pos - SQUARE_SIZE)
-    elif snake.direction=="Right":
+    if snake.direction=="Right":
         snake.goto(x_pos + SQUARE_SIZE, y_pos)
         print("You moved up")
-    elif snake.direction=="Left":
+    if snake.direction=="Left":
         snake.goto(x_pos - SQUARE_SIZE, y_pos)
+        print("You moved Left")
     new_stamp()
     remove_tail()
+    
     
     new_pos = snake.pos()
     new_x_pos = new_pos[0]
@@ -125,38 +142,17 @@ def move_snake():
         food_stamps.pop(food_index) 
         new_stamp()
         print("You have eaten the food!")
-    print("The position list is ", pos_list)
-    print("-----------------The snake position is ", snake.pos())
+    
     #if snake.pos() in pos_list[0:-1]:
-    s_pos_list = set(pos_list)
-    if len(s_pos_list) != len(pos_list):
-        print("You ate yourself")
-        score()
-        
+    
         
     if len(food_stamps) <= 6 :
             make_food()
         
-    turtle.ontimer(move_snake(),TIME_STEP)
-
-
-def make_food():
-    min_x=-int(SIZE_X/2/SQUARE_SIZE)+1
-    max_x=int(SIZE_X/2/SQUARE_SIZE)-1
-    min_y=-int(SIZE_Y/2/SQUARE_SIZE)+1
-    max_y=int(SIZE_Y/2/SQUARE_SIZE)-1
-    
-    #Pick a position that is a random multiple of SQUARE_SIZE
-    food_x = random.randint(min_x,max_x)*SQUARE_SIZE
-    food_y = random.randint(min_y,max_y)*SQUARE_SIZE
-
-    food.goto(food_x,food_y)
-    food_pos.append(food.pos())
-    food_stamps.append(food.stamp())
 
     
 
-
+    turtle.ontimer(move_snake,TIME_STEP)
 move_snake()
    
 
